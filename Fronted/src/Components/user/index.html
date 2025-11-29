@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>3D Hover Rotate Card</title>
+<style>
+  :root{
+    --w: 320px;
+    --h: 420px;
+    --perspective: 1000px;
+    --max-tilt: 18deg; /* max rotation */
+    --scale-hover: 1.06;
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    display:grid;
+    place-items:center;
+    background: linear-gradient(180deg,#0f172a,#071133);
+    font-family: Inter, system-ui, Arial, sans-serif;
+  }
+
+  .scene{
+    perspective: var(--perspective);
+  }
+
+  .card{
+    width: var(--w);
+    height: var(--h);
+    border-radius: 18px;
+    transform-style: preserve-3d;
+    transition: transform 600ms cubic-bezier(.2,.9,.25,1), box-shadow 300ms ease;
+    will-change: transform;
+    background:#0b1220;
+    box-shadow: 0 18px 40px rgba(2,6,23,.6);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    --rx: 0deg;
+    --ry: 0deg;
+    --s: 1;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
+  }
+
+  /* inner content sits slightly above the surface for parallax */
+  .card__inner{
+    position:absolute;
+    inset:0;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    z-index:2;
+    transform: translateZ(36px); /* pop-out */
+  }
+
+  .logo{
+    width:68px;
+    height:68px;
+    border-radius:12px;
+    background: linear-gradient(135deg,#ffd166,#ef476f);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    color:#08111b;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+  }
+
+  .title{
+    color:#e6eef8;
+    font-size:18px;
+    margin-top:6px;
+  }
+
+  .subtitle{
+    color:#9fb4d9;
+    font-size:13px;
+  }
+
+  .art{
+    margin-top:auto;
+    height:180px;
+    border-radius:12px;
+    background: linear-gradient(180deg,#2b6cb0,#1e3a8a);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,.9);
+    font-size:28px;
+    transform: translateZ(22px) rotateZ(-6deg);
+    box-shadow: 0 18px 40px rgba(15,23,42,.45);
+  }
+
+  /* soft rim light and highlight for more 3D feel */
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: radial-gradient(600px 200px at 10% 10%, rgba(255,255,255,.06), transparent 8%),
+                linear-gradient(180deg, rgba(255,255,255,.02), transparent 40%);
+    z-index:1;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+
+  /* interactive states */
+  .card.hovering{
+    box-shadow: 0 28px 68px rgba(2,6,23,.7);
+  }
+
+  /* reset transition when leaving */
+  .card.reset{
+    transition: transform 600ms cubic-bezier(.2,.9,.25,1), box-shadow 350ms ease;
+  }
+
+  /* small responsive tweak */
+  @media (max-width:420px){
+    :root{ --w: 92vw; --h: 56vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="card" id="card" aria-label="3D rotating card" tabindex="0">
+    <div class="card__inner">
+      <div style="display:flex;gap:14px;align-items:center">
+        <div class="logo">CT</div>
+        <div>
+          <div class="title">Chin Accessory</div>
+          <div class="subtitle">Headwear • Handwear • Neckwear</div>
+        </div>
+      </div>
+
+      <div class="art">✨ Traditional ✨</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+  Smooth 3D tilt on mouse move.
+  - Uses requestAnimationFrame for smoothness.
+  - Lerp (linear interpolation) to smooth target -> current.
+  - Works with mouse and touch (touch toggles reset on release).
+*/
+
+(function(){
+  const card = document.getElementById('card');
+  const maxTilt = 18; // degrees, should match CSS var --max-tilt
+  const scaleHover = 1.06; // should match CSS var --scale-hover
+
+  // smoothing params
+  let currentX = 0, currentY = 0;
+  let targetX = 0, targetY = 0;
+  const ease = 0.12;
+
+  let rafId = null;
+  let isHover = false;
+
+  function lerp(a,b,t){ return a + (b-a) * t; }
+
+  function applyTransform(){
+    currentX = lerp(currentX, targetX, ease);
+    currentY = lerp(currentY, targetY, ease);
+
+    // CSS rotateX is inverted vs mouse y
+    const rx = (currentY).toFixed(2) + 'deg';
+    const ry = (currentX).toFixed(2) + 'deg';
+
+    card.style.setProperty('--rx', rx);
+    card.style.setProperty('--ry', ry);
+    card.style.setProperty('--s', isHover ? scaleHover : 1);
+
+    rafId = requestAnimationFrame(applyTransform);
+  }
+
+  function onEnter(){
+    isHover = true;
+    card.classList.add('hovering');
+    card.classList.remove('reset');
+    if (!rafId) applyTransform();
+  }
+
+  function onMove(e){
+    const rect = card.getBoundingClientRect();
+    const x = ( (e.clientX ?? e.touches?.[0]?.clientX) - rect.left ) / rect.width;
+    const y = ( (e.clientY ?? e.touches?.[0]?.clientY) - rect.top ) / rect.height;
+
+    // center at 0,0 -> range -0.5..+0.5 => multiply so -1..+1
+    const nx = (x - 0.5) * 2;
+    const ny = (y - 0.5) * 2;
+
+    // map to degrees
+    targetX = nx * maxTilt * -1; // rotateY (horizontal movement -> Y rotation)
+    targetY = ny * maxTilt;
+  }
+
+  function onLeave(){
+    isHover = false;
+    card.classList.remove('hovering');
+    card.classList.add('reset');
+
+    // reset targets
+    targetX = 0;
+    targetY = 0;
+
+    // stop after small delay to allow reset animation
+    setTimeout(() => {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }, 700);
+  }
+
+  // mouse events
+  card.addEventListener('mouseenter', onEnter);
+  card.addEventListener('mousemove', onMove);
+  card.addEventListener('mouseleave', onLeave);
+
+  // keyboard focus accessibility (tilt on arrow keys)
+  card.addEventListener('focus', onEnter);
+  card.addEventListener('blur', onLeave);
+  card.addEventListener('keydown', (ev) => {
+    const step = 4;
+    if (ev.key === 'ArrowLeft')  targetX = Math.max(targetX - step, -maxTilt);
+    if (ev.key === 'ArrowRight') targetX = Math.min(targetX + step, maxTilt);
+    if (ev.key === 'ArrowUp')    targetY = Math.max(targetY - step, -maxTilt);
+    if (ev.key === 'ArrowDown')  targetY = Math.min(targetY + step, maxTilt);
+  });
+
+  // touch support: start tilt while touching, follow touchmove, reset on end
+  card.addEventListener('touchstart', (e) => { onEnter(); onMove(e); }, {passive:true});
+  card.addEventListener('touchmove', (e) => { onMove(e); }, {passive:true});
+  card.addEventListener('touchend', () => onLeave());
+
+  // small initial animation
+  setTimeout(() => {
+    card.classList.add('reset');
+    card.style.transition = 'transform 650ms cubic-bezier(.2,.9,.25,1)';
+    card.style.setProperty('--s', 1);
+  }, 400);
+})();
+</script>
+</body>
+</html>

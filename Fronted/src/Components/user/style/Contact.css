@@ -1,0 +1,68 @@
+/* Body */
+body {
+  background-color: #f3f6fc;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.contact-section h2{
+  color: rgb(255, 254, 254);
+}
+/* Contact cards */
+.contact-section .bg-white {
+  background-color: #ffffff !important;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Buttons */
+.contact-section .btn,
+.contact-section .send-message-btn {
+  background-color:#3b4868; /* main blue */
+  color: #fff;
+  border-radius: 30px;
+  padding: 10px 25px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.contact-section .btn:hover,
+.contact-section .send-message-btn:hover {
+  background-color: #4d5e88; /* deeper blue */
+  color: #fff;
+}
+
+/* Inputs and textarea */
+.contact-section .form-control {
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #4d5e88;
+  transition: 0.3s;
+  background-color: #ffffff;
+}
+
+.contact-section .form-control:focus {
+  border-color: #4d5e88;
+  box-shadow: 0 0 6px rgba(41, 61, 113, 0.4);
+  outline: none;
+}
+
+/* Headings */
+
+
+/* Map container */
+.contact-section .map-container {
+  width: 100%;
+  height: 350px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+  .row > .col-md-6 {
+    margin-bottom: 20px;
+  }
+}

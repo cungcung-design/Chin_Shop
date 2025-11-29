@@ -1,0 +1,34 @@
+.product-card {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.avg-rating {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.comments-list li {
+  font-size: 0.9rem;
+}
+
+.comments-section .accordion-button {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .product-image {
+    width: 60px;
+    height: 60px;
+  }
+}

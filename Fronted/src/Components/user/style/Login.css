@@ -1,0 +1,72 @@
+.login-section {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+.login-section .row {
+  display: flex;
+  align-items: stretch; 
+}
+.login-section .left,
+.login-section .right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertically center content */
+}
+
+.login-section .left{
+  background:#243959;
+ width: 500px;
+ height: 420px;
+ margin-top: -40px;
+}
+.login-section .left .left-container{
+  margin-left: 40px;
+}
+.left-container p{
+  margin-left: 40px;
+}
+.login-section .right{
+  width: 500px;
+  height: 420px;
+}
+.login-section .right h2{
+  color: #414170;
+}
+.input-group-text {
+  border: none;
+  border-right: 1px solid #ddd;
+}
+
+.form-control {
+  border-left: none;
+  box-shadow: none;
+}
+
+.form-control:focus {
+  border-color: #243959;
+  box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
+}
+
+.login-section .btn-primary {
+  background:  #414170;
+}
+.login-section .btn-primary:hover {
+  background:  #32325b;
+}
+
+
+.signup-link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.signup-link {
+  color: blue;
+  cursor: pointer;
+  font-weight: 500;
+}
+.signup-link:hover {
+  text-decoration: underline;
+}
