@@ -1,20 +1,41 @@
 const jwt = require("jsonwebtoken");
 
+// =====================
+// ADMIN AUTHENTICATION
+// =====================
 const authAdmin = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
-  if (!token) return res.status(401).json({ message: "No token, authorization denied" });
+
+  // No token
+  if (!token) {
+    return res.status(401).json({
+      message: "No token, authorization denied",
+    });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; 
+    // Verify JWT
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
 
+    // Save decoded user
+    req.user = decoded;
+
+    // Check admin role
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied: Admins only" });
+      return res.status(403).json({
+        message: "Access denied: Admins only",
+      });
     }
 
+    // Admin authenticated
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({
+      message: "Invalid token",
+    });
   }
 };
 

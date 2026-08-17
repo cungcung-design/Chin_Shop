@@ -5,10 +5,27 @@ const Product = require("../models/Product");
 // GET all products
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate("categoryId")
-      .populate("comments.user");
-    res.json(products);
+    const page = Math.max(1, parseInt(req.query.page || "1", 10));
+    const limit = Math.max(1, parseInt(req.query.limit || "12", 10));
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      Product.find()
+        .populate("categoryId")
+        .populate("comments.user")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Product.countDocuments(),
+    ]);
+
+    res.json({
+      products,
+      total,
+      page,
+      limit,
+      pages: Math.max(1, Math.ceil(total / limit)),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

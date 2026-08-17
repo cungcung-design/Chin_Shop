@@ -1,0 +1,25 @@
+/* ========== Featured Collections Mobile Horizontal Scroll ========== */
+@media (max-width: 767.98px) {
+  .featured-collections-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 20px;
+    scroll-padding-right: 20px;
+  }
+
+  .featured-collections-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured-collection-card {
+    flex: 0 0 auto;
+    width: calc(100% - 60px);
+    scroll-snap-align: start;
+  }
+}

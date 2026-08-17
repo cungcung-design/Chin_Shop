@@ -10,7 +10,8 @@ router.get("/", async (req, res) => {
 
 // POST create category
 router.post("/", async (req, res) => {
-  const newCategory = new Category({ name: req.body.name });
+  const { name, description, image } = req.body;
+  const newCategory = new Category({ name, description, image });
   await newCategory.save();
   res.json(newCategory);
 });
@@ -20,7 +21,7 @@ router.put("/:id", async (req, res) => {
   try {
     const updatedCategory = await Category.findByIdAndUpdate(
       req.params.id,
-      { name: req.body.name },
+      { name: req.body.name, description: req.body.description, image: req.body.image },
       { new: true }
     );
     if (!updatedCategory) return res.status(404).json({ message: "Category not found" });
